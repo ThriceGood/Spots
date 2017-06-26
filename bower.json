@@ -1,0 +1,13 @@
+{
+  "name": "spots",
+  "description": "skatespot info website",
+  "main": "app.js",
+  "authors": [
+    "Jonathan Norris"
+  ],
+  "license": "ISC",
+  "homepage": "",
+  "dependencies": {
+    "bootstrap": "^3.3.7"
+  }
+}
