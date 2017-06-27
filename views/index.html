@@ -20,43 +20,44 @@
 
   </head>
   <body>
-
     
     <!-- Static navbar -->
     <nav class="navbar navbar-default navbar-static-top">
       <div class="container">
         <div class="navbar-header">
+          <div id="logoDiv"><img src="images/skateboard-marker2.png"></img></div>
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
             <span class="sr-only">Toggle navigation</span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="/">Spots</a>
+          <a class="navbar-brand closeMe" href="/">Spots</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <!--<li><a href="#">Home</a></li>-->
-            <!--<li><a href="#about">About</a></li>-->
-            <!--<li><a href="#contact">Contact</a></li>-->
-            <!--<li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
-              <ul class="dropdown-menu">
-                <li><a href="#">Action</a></li>
-                <li><a href="#">Another action</a></li>
-                <li><a href="#">Something else here</a></li>
-                <li role="separator" class="divider"></li>
-                <li class="dropdown-header">Nav header</li>
-                <li><a href="#">Separated link</a></li>
-                <li><a href="#">One more separated link</a></li>
-              </ul>
-            </li>-->
-          </ul>
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="#" onclick="findMe()">find me</a></li>
-            <li><a href="#" onclick="zoomToStreet()">zoom in</a></li>
-            <li><a href="#" onclick="zoomToCity()">zoom out</a></li>
-            <li><a href="#" data-toggle="modal" data-target="#spotModal">add spot</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">menu <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="#" data-toggle="modal" data-target="#loginModal">login</a></li>
+                <li><a href="#" data-toggle="modal" data-target="#registrationModal">register</a></li>
+                <li><a href="#" data-toggle="modal" data-target="#aboutModal">about</a></li>
+                <li role="separator" class="divider"></li>
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">cities <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="#" onclick="centerMap(48.210033, 16.363449)" class="closeMe">Vienna</a></li>
+                <li><a href="#" onclick="centerMap(53.350140, -6.266155)" class="closeMe">Dublin</a></li>
+                <li><a href="#" onclick="centerMap(40.730610, -73.935242)" class="closeMe">New York</a></li>
+                <li role="separator" class="divider"></li>
+              </ul>
+            </li>
+            <li><a href="#" class="closeMe" id="findMeButton" onclick="findMe()">find me</a></li>
+            <li><a href="#" class="closeMe" onclick="zoomToStreet()">zoom in</a></li>
+            <li><a href="#" class="closeMe" onclick="zoomToCity()">zoom out</a></li>
+            <li><a href="#" class="closeMe" id="addSpotButton" data-toggle="modal" data-target="#spotModal">add spot</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -69,7 +70,7 @@
         <div id="map" class="map"></div>
 
         <footer class="footer">
-            <p>&copy; 2017</p>
+            <p>&copy; Spots 2017</p>
         </footer>
 
     </div> <!-- /container -->
@@ -91,8 +92,8 @@
                             <input type="text" class="form-control" id="name" name="name" placeholder="name the spot...">
                         </div>
                         <div class="form-group">
-                            <label for="street">Street</label>
-                            <input type="text" class="form-control" id="street" name="street" value="some street">
+                            <label for="address">Address</label>
+                            <input type="text" class="form-control" id="address" name="address" placeholder="enter the address">
                         </div>
                         <div class="form-group">
                             <label for="description">Description</label>
@@ -112,6 +113,85 @@
         </div>
     </div>
 
+    <!-- registration form modal -->
+    <div class="modal fade" id="registrationModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Register</h4>
+                </div>
+                <form>
+                    <!--modal content-->
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="userName">Username</label>
+                            <input type="text" class="form-control" id="userName" name="userName" placeholder="enter username">
+                        </div>
+                        <div class="form-group">
+                            <label for="userPassword">Password</label>
+                            <input type="password" class="form-control" id="userPassword" name="userPassword" placeholder="enter password">
+                        </div>
+                        <div class="form-group">
+                            <label for="userConfirmPassword">Confirm Password</label>
+                            <input type="password" class="form-control" id="userConfirmPassword" name="userConfirmPassword" placeholder="confirm password">
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Email</label>
+                            <input type="email" class="form-control" id="userEmail" name="userEmail" placeholder="enter email">
+                        </div>
+                        <div class="form-group">
+                            <label for="userLocation">Location</label>
+                            <select class="form-control">
+                                <option>Vienna</option>
+                                <option>Dublin</option>
+                                <option>New York</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-default">Register</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- login form modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <!--<div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Login</h4>
+                </div>-->
+                <form>
+                    <!--modal content-->
+                    <div class="modal-body">
+                        <div id="loginForm">
+                            <form class="form-signin">
+                                <label for="loginUserName" class="sr-only">Username</label>
+                                <input type="text" id="loginUserName" class="form-control" placeholder="Username" required autofocus>
+                                <label for="loginPassword" class="sr-only">Password</label>
+                                <input type="password" id="loginPassword" class="form-control" placeholder="Password" required>
+                                <!--<div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" value="remember-me"> Remember me
+                                    </label>
+                                </div>-->
+                                <button class="btn btn-default btn-block" type="submit">Login</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!--spot info modal-->
     <div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
@@ -123,15 +203,57 @@
                 <div class="modal-body">
                     <h4>Name</h4>
                     <p id="infoName"></p>
-                    <h4>Street</h4>
-                    <p id="infoStreet"></p>
+                    <h4>Address</h4>
+                    <p id="infoAddress"></p>
                     <h4>Description</h4>
                     <p id="infoDescription"></p>
-                    <p><i id="infoUploadBy"></i></p>
+                    <br>
+                    <p style="font-size: 11;"><i id="infoUploadBy"></i></p>
                 </div>
-                <div class="modal-footer">
+                <!--<div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>-->
+            </div>
+        </div>
+    </div>
+
+    <!--about modal-->
+    <div class="modal fade" id="aboutModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div id="logoDivAbout"><img src="images/skateboard-marker2.png"></img></div>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Spots</h4>
                 </div>
+                <div class="modal-body">
+                    <h4>About</h4>
+                    <p>Welcome to Spots! A website for sharing skatespots from anywhere in the world.</p>
+                    <br>
+                    <h4>How To</h4>
+                    <p>
+                        First join Spots by creating a user account! Spots can be viewed without an account, but you must 
+                        sign up to be able to save a spot. A spot can only be added using a mobile device.
+                    </p>
+                    <p>
+                        To add a spot first go skating and find one! Then open Spots on your phones browser. Click the menu
+                        icon and you will see you have the option to 'add spot'. Click this option and a spot form will appear
+                        with the address of the spot autofilled. The autofilling is gotten using geolocation and may not be 
+                        totally accurate. If the address does not look right to you then correct it before saving. Fill out the
+                        name and description and add a photo of the spot. Then click 'Save' and the spot will be added to the map! 
+                    </p>
+                    <p>
+                        When a spot is added to the map it can be seen as a black spot icon. Click on these icons to view the information
+                        about a spot, including uploaded images.
+                    </p>
+                    <p>
+                        Another option, 'find me', is only available on a mobile device. Click on this and the map will zoom on your position.
+                    </p>
+                    <p>Enjoy, shred and please contribute!</p>
+                </div>
+                <!--<div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>-->
             </div>
         </div>
     </div>
@@ -148,7 +270,8 @@
                 })
             ],
             view: new ol.View({
-                center: ol.proj.fromLonLat([37.41, 8.82]),
+                // center: ol.proj.fromLonLat([0, 0]),
+                center: ol.proj.fromLonLat([16.363449, 48.210033]),
                 zoom: 13
             })
         });
@@ -172,7 +295,7 @@
 
         // set street zoom
         function zoomToStreet() {
-            mapView.setZoom(18);
+            mapView.setZoom(15);
         }
 
         // set city zoom
@@ -184,6 +307,12 @@
         function findMe() {
             geo.getCurrentPosition(setUserLocation, failure);
             mapView.setZoom(18);
+        }
+
+        // center map
+        function centerMap(lat, lng) {
+            mapView.setCenter(ol.proj.fromLonLat([lng, lat]));
+            mapView.setZoom(13);
         }
 
         function setUserLocation(position) {
@@ -238,15 +367,17 @@
         function addSpotsToMap(spots) {
             var features = [];
             for (i in spots) {
-                var spot = spots[i]
-                var coords = spot['coords']
-                var lat = parseFloat(coords.split(',')[0])
-                var lng = parseFloat(coords.split(',')[1])
+                var spot = spots[i];
+                // console.log(spot);
+                var coords = spot['coords'];
+                var lat = parseFloat(coords.split(',')[0]);
+                var lng = parseFloat(coords.split(',')[1]);
                 iconFeature = new ol.Feature({
                     geometry: new ol.geom.Point(ol.proj.fromLonLat([lng, lat])),
                     type: 'spot',
                     name: spot['name'],
-                    street: spot['street'],
+                    address: spot['address'],
+                    description: spot['description'],
                     uploadBy: spot['uploadBy'],
                     uploadDate: spot['uploadDate']
                 });  
@@ -264,6 +395,33 @@
             map.addLayer(vectorLayer); 
         }
 
+        // add address to spot form
+        $('#spotModal').on('shown.bs.modal', function (e) {
+            geo.getCurrentPosition(getAddressLocation, getAddressfailure);
+        })
+
+        function getAddressLocation(position) {
+            lat = position.coords.latitude;
+            lng = position.coords.longitude;
+            $.get( "https://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+","+lng+"&key=AIzaSyAnejEJ27RlESS7fjGHXEp0h_jz3dMFf58", function(data) {
+                // console.log(data);
+                if (data['status'] === 'OK') {
+                    var fullAddress = data['results'][0]['formatted_address'];
+                    console.log(fullAddress);
+                    $('#address').val(fullAddress);
+                }
+                else {
+                    console.log('error getting address data from Geocode api');
+                    $('#address').val('cannot determine address, please enter one');
+                }
+            });
+        }
+
+        function getAddressfailure(error) {
+            console.log(error.message);
+            $('#address').val('cannot determine address, please enter one');
+        }
+
         // click on feature to open info modal
         map.on('singleclick', function(evt) {
             var feature = map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
@@ -271,7 +429,7 @@
                     var spot = feature['S'];
                     // console.log(spot);
                     $('#infoName').html(spot['name']);
-                    $('#infoStreet').html(spot['street']);
+                    $('#infoAddress').html(spot['address']);
                     $('#infoDescription').html(spot['description']);
                     $('#infoUploadBy').html('uploaded by: ' + spot['uploadBy']);
                     $('#infoModal').modal('toggle');
@@ -280,11 +438,19 @@
         }); 
 
         // collaps navbar after click
-        $('.navbar-collapse a').on('click', function(){
+        $('.closeMe').on('click', function(){
             if($('.navbar-collapse').hasClass('in')) {
                 $(".navbar-collapse").collapse('hide');
             }
         });
+
+        // detect if mobile
+        var isMobile = true;
+        if(! /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+            $('#addSpotButton').hide();
+            $('#findMeButton').hide();
+            isMobile = false;
+        }
 
     </script>
 

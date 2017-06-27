@@ -25,7 +25,7 @@ router.post('/', function(req, res, next){
     var spot = new Spot({
         coords: req.body.coords,
         name: req.body.name,
-        street: req.body.street,
+        address: req.body.address,
         description: req.body.description,
         uploadBy: 'Jonathan',
         uploadDate: '21-06-2017 16:43:21'

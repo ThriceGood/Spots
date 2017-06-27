@@ -1,14 +1,66 @@
 
+/*navbar*/
+
+#logoDiv {
+    float: left;
+    margin-top: 6px;
+    margin-right: 10px;
+}
+
+#logoDivAbout {
+    float: left;
+    /*margin-top: 2px;*/
+    margin-right: 10px;
+}
+
+#aboutModal .modal-title {
+    margin-top: 6px;
+}
+
+#aboutModal .modal-body {
+    text-align: justify;
+}
+
+#loginForm {
+    padding: 30px 60px 10px 60px;
+}
+
+#loginPassword {
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.divider {
+    display: none;
+}
+
+
 /*map style*/
+
 #map {
     height: 85%;
 }
 
+
 /*footer*/
+
 .footer {
     text-align: center;
     margin-top: 20px;
     padding-top: 19px;
     color: lightgray;
     border-top: 1px solid #e5e5e5;
+}
+
+
+/*media query*/
+@media(max-width: 768px) {
+    .divider {
+        display: block;
+    }
+
+    #logoDiv {
+        margin-right: 0px;
+        margin-left: 20px;
+    }
 }

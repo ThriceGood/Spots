@@ -4,7 +4,7 @@ var Schema = mongoose.Schema;
 var SpotSchema = new Schema({
     coords:                 String,
     name:                   String,
-    street:                 String,
+    address:                String,
     description:            String,
     uploadBy: 		        String,
     uploadDate: 	        String
