@@ -1,11 +1,19 @@
 
+/*for browse file button*/
+[hidden] {
+  display: none !important;
+}
+
 /*navbar*/
 
 #logoDiv {
     float: left;
-    margin-top: 6px;
+    margin-top: -8px;
     margin-right: 10px;
 }
+
+
+/*modals*/
 
 #logoDivAbout {
     float: left;
@@ -19,6 +27,11 @@
 
 #aboutModal .modal-body {
     text-align: justify;
+}
+
+#tagline {
+    text-align: center;
+    font-weight: bold;
 }
 
 #loginForm {
