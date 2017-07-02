@@ -36,8 +36,10 @@
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">menu <span class="caret"></span></a>
               <ul class="dropdown-menu">
-                <li><a href="#" data-toggle="modal" data-target="#loginModal">login</a></li>
-                <li><a href="#" data-toggle="modal" data-target="#registrationModal">register</a></li>
+                <% if (!user) { %>
+                    <li><a href="#" data-toggle="modal" data-target="#loginModal">login</a></li>
+                    <li><a href="#" data-toggle="modal" data-target="#registrationModal">register</a></li>
+                <% } %>       
                 <li><a href="#" data-toggle="modal" data-target="#aboutModal">about</a></li>
                 <li role="separator" class="divider"></li>
               </ul>
@@ -52,7 +54,9 @@
               </ul>
             </li>
             <li><a href="#" class="closeMe" id="findMeButton" onclick="findMe()">find me</a></li>
-            <li><a href="#" class="closeMe" id="addSpotButton" data-toggle="modal" data-target="#spotModal">add spot</a></li>
+            <% if (user) { %>
+                <li><a href="#" class="closeMe" id="addSpotButton" data-toggle="modal" data-target="#spotModal">add spot</a></li>
+            <% } %>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -61,12 +65,19 @@
     <!--content-->
     <div class="container">
 
-        <!--example of how to display errors-->
+        <!--display errors-->
         <div>
             <% if (typeof(errors) != 'undefined') { %>
                 <% for (i in errors) { %>
                     <div class="alert alert-danger"><%= errors[i].msg %> &nbsp;</div>
                 <% } %>
+            <% } %>
+        </div>
+
+        <!--display messages-->
+        <div>
+            <% if (typeof(message) != 'undefined') { %>
+                <%= message %>
             <% } %>
         </div>
 
@@ -87,7 +98,7 @@
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="myModalLabel">Add Spot</h4>
                 </div>
-                <form action="/" method="post">
+                <form action="/" method="POST">
                     <!--modal content-->
                     <div class="modal-body">
                         <input type="hidden" id="coords" name="coords">
@@ -126,28 +137,28 @@
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="myModalLabel">Register</h4>
                 </div>
-                <form>
+                <form method="POST" action="/users">
                     <!--modal content-->
                     <div class="modal-body">
                         <div class="form-group">
                             <label for="userName">Username</label>
-                            <input required minlength="3" maxlength="30" type="text" class="form-control" id="userName" name="userName" placeholder="enter username">
+                            <input required minlength="3" maxlength="30" type="text" class="form-control" id="userName" name="username" placeholder="enter username">
                         </div>
                         <div class="form-group">
                             <label for="userPassword">Password</label>
-                            <input required minlength="8" type="password" class="form-control" id="userPassword" name="userPassword" placeholder="enter password">
+                            <input required minlength="8" type="password" class="form-control" id="userPassword" name="password" placeholder="enter password">
                         </div>
                         <div class="form-group">
                             <label for="userConfirmPassword">Confirm Password</label>
-                            <input required type="password" class="form-control" id="userConfirmPassword" name="userConfirmPassword" placeholder="confirm password">
+                            <input required type="password" class="form-control" id="userConfirmPassword" name="confirmPassword" placeholder="confirm password">
                         </div>
                         <div class="form-group">
                             <label for="userEmail">Email</label>
-                            <input required type="email" class="form-control" id="userEmail" name="userEmail" placeholder="enter email">
+                            <input required type="email" class="form-control" id="userEmail" name="email" placeholder="enter email">
                         </div>
                         <div class="form-group">
                             <label for="userLocation">Location</label>
-                            <select class="form-control">
+                            <select class="form-control" name="location">
                                 <option>Vienna</option>
                                 <option>Dublin</option>
                                 <option>New York</option>
@@ -167,15 +178,15 @@
     <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <form>
+                <form method="POST" action="/users/login">
                     <!--modal content-->
                     <div class="modal-body">
                         <div id="loginForm">
                             <form class="form-signin">
                                 <label for="loginUserName" class="sr-only">Username</label>
-                                <input type="text" id="loginUserName" class="form-control" placeholder="Username" required>
+                                <input type="text" id="loginUserName" class="form-control" name="username" placeholder="Username" required>
                                 <label for="loginPassword" class="sr-only">Password</label>
-                                <input type="password" id="loginPassword" class="form-control" placeholder="Password" required>
+                                <input type="password" id="loginPassword" class="form-control" name="password" placeholder="Password" required>
                                 <!--<div class="checkbox">
                                     <label>
                                         <input type="checkbox" value="remember-me"> Remember me

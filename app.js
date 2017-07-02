@@ -5,9 +5,12 @@ const bodyParser = require('body-parser');
 const expressValidator = require('express-validator')
 const flash = require('connect-flash')
 const session = require('express-session')
+const passport = require('passport')
+
+const config = require('./config/database')
 
 // database
-mongoose.connect('mongodb://localhost/spots');
+mongoose.connect(config.database);
 let db = mongoose.connection;
 
 // // Check connection
@@ -22,6 +25,7 @@ db.on('error', function(err){
 
 // import routes
 const index = require('./routes/index');
+const users = require('./routes/users');
 
 // initialize app
 const app = express()
@@ -67,11 +71,22 @@ app.use(expressValidator({
   }
 }));
 
+// passport config
+require('./config/passport')(passport);
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.get('*', function(req, res, next){
+  res.locals.user = req.user || null;
+  next();
+});
+
 // set static folder
 app.use(express.static(path.join(__dirname, 'public')));
 
 // set routes
 app.use('/', index)
+app.use('/users', users)
 
 // start app
 app.listen(3000, function () {

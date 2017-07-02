@@ -1,5 +1,6 @@
 
 /*for browse file button*/
+
 [hidden] {
   display: none !important;
 }
@@ -12,12 +13,10 @@
     margin-right: 10px;
 }
 
-
 /*modals*/
 
 #logoDivAbout {
     float: left;
-    /*margin-top: 2px;*/
     margin-right: 10px;
 }
 
@@ -47,13 +46,11 @@
     display: none;
 }
 
-
 /*map style*/
 
 #map {
     height: 85%;
 }
-
 
 /*footer*/
 
@@ -65,7 +62,6 @@
     border-top: 1px solid #e5e5e5;
 }
 
-
 /*media query*/
 @media(max-width: 768px) {
     .divider {
@@ -73,7 +69,6 @@
     }
 
     #logoDiv {
-        margin-right: 0px;
-        margin-left: 20px;
+        margin-right: 10px;
     }
 }
