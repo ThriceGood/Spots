@@ -2,12 +2,13 @@ const express = require('express')
 const path = require('path');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const fileUpload = require('express-fileupload');
 const expressValidator = require('express-validator')
 const flash = require('connect-flash')
 const session = require('express-session')
 const passport = require('passport')
 
-const config = require('./config/database')
+const config = require('./config/config')
 
 // database
 mongoose.connect(config.database);
@@ -39,9 +40,12 @@ app.engine('html', require('ejs').renderFile);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
+// file upload
+app.use(fileUpload());
+
 // express session
 app.use(session({
-  secret: 'should come from env vars or config file',
+  secret: config.secret,
   resave: true,
   saveUninitialized: true,
 }))

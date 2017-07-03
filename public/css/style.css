@@ -50,6 +50,19 @@
     text-align: center;
 }
 
+#infoPhoto {
+    text-align: center;
+}
+
+#noPhotoError {
+    padding-right: 50px;
+    float: right;
+}
+
+#infoPhoto img {
+    width: 80%; 
+}
+
 /*map style*/
 
 #map {

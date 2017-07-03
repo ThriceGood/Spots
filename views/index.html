@@ -91,7 +91,7 @@
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="myModalLabel">Add Spot</h4>
                 </div>
-                <form action="/" method="POST">
+                <form action="/" method="POST" encType="multipart/form-data">
                     <!--modal content-->
                     <div class="modal-body">
                         <input type="hidden" id="coords" name="coords">
@@ -107,15 +107,16 @@
                             <label for="description">Description</label>
                             <textarea required maxlength="150" class="form-control" rows="5" id="description" name="description" placeholder="describe the spot..."></textarea>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" id="photoGroup">
                             <label for="photo" class="btn btn-default">
-                                Add Photo <input type="file" id="photo" name="photo" hidden>
+                                Add Photo <input required type="file" id="photo" name="photo" hidden>
                             </label>
+                            <span id="noPhotoError" class="help-block">a photo is required</span>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-default">Save</button>
+                        <button type="submit" class="btn btn-default" onclick="checkPhoto()">Save</button>
                     </div>
                 </form>
             </div>
@@ -205,6 +206,10 @@
                     <p id="infoName"></p>
                     <p id="infoAddress"></p>
                     <p id="infoDescription"></p>
+                    <hr>
+                    <div id="infoPhoto">
+                        <img src=""></img>
+                    </div>
                     <hr>
                     <p style="font-size:11;"><i id="infoUploadBy"></i></p>
                 </div>
@@ -383,6 +388,7 @@
                     name: spot['name'],
                     address: spot['address'],
                     description: spot['description'],
+                    photo: spot['photo'],
                     uploadBy: spot['uploadBy'],
                     uploadDate: spot['uploadDate']
                 });  
@@ -434,6 +440,7 @@
                     $('#infoName').html('<b>' + spot['name'] + '</b>');
                     $('#infoAddress').html(spot['address']);
                     $('#infoDescription').html(spot['description']);
+                    $("#infoPhoto > img").attr('src', 'uploads/' + spot['photo']);
                     $('#infoUploadBy').html('uploaded by: ' + spot['uploadBy']);
                     $('#infoModal').modal('toggle');
                 }
@@ -476,6 +483,16 @@
                 });
             }
         });
+
+        
+        // check photo
+        // $('#noPhotoError').hide();
+        function checkPhoto() {
+            var photoVal = $('#photo').val();
+            if (!photoVal) {
+                $('#photoGroup').addClass('has-error');
+            }
+        }
 
         // if not mobile
         var isMobile = true;

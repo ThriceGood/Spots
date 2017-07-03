@@ -36,12 +36,25 @@ router.post('/', authenticate, function(req, res, next){
         res.redirect('/');
     } else {
         User.findById(req.user._id, function(err, user){
-            if (err) return console.error(err);
-                var spot = new Spot({
+            if (err) throw err;;
+            // upload photo
+            var photo = req.files.photo;
+            var photoname = '';
+            if (photo) {
+                var timestamp = Math.round((new Date()).getTime() / 1000);
+                photoname = req.user._id + - + timestamp + '.png';
+                photo.mv('public/uploads/' + photoname, function(err) {
+                    if (err) throw err;
+                    console.log('file uploaded')
+                });
+            }
+            // create spot
+            var spot = new Spot({
                 coords: req.body.coords,
                 name: req.body.name,
                 address: req.body.address,
                 description: req.body.description,
+                photo: photoname,
                 uploadBy: user.username,
                 uploadDate: new Date()
             });
