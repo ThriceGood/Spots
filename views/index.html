@@ -29,7 +29,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand closeMe" href="/"><div id="logoDiv"><img src="images/skateboard-marker2.png"></img></div> Spots</a>
+          <a class="navbar-brand closeMe" href="/"><div id="logoDiv"><img src="images/skateboard.png"></img></div> Spots</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
@@ -62,23 +62,16 @@
       </div>
     </nav>
 
+    <% if (user) { %>
+        <div id="userLocation" hidden><%= user.location %></div>
+    <% } %>
+
     <!--content-->
     <div class="container">
 
-        <!--display errors-->
-        <div>
-            <% if (typeof(errors) != 'undefined') { %>
-                <% for (i in errors) { %>
-                    <div class="alert alert-danger"><%= errors[i].msg %> &nbsp;</div>
-                <% } %>
-            <% } %>
-        </div>
-
         <!--display messages-->
         <div>
-            <% if (typeof(message) != 'undefined') { %>
-                <%= message %>
-            <% } %>
+            <%- messages() %>
         </div>
 
         <!--map-->
@@ -140,9 +133,10 @@
                 <form method="POST" action="/users">
                     <!--modal content-->
                     <div class="modal-body">
-                        <div class="form-group">
+                        <div class="form-group" id="userNameGroup">
                             <label for="userName">Username</label>
                             <input required minlength="3" maxlength="30" type="text" class="form-control" id="userName" name="username" placeholder="enter username">
+                            <span id="userNameError" class="help-block">username already exists, please enter a different one</span>
                         </div>
                         <div class="form-group">
                             <label for="userPassword">Password</label>
@@ -167,7 +161,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-default">Register</button>
+                        <button type="submit" id="regSubmit" class="btn btn-default">Register</button>
                     </div>
                 </form>
             </div>
@@ -187,11 +181,6 @@
                                 <input type="text" id="loginUserName" class="form-control" name="username" placeholder="Username" required>
                                 <label for="loginPassword" class="sr-only">Password</label>
                                 <input type="password" id="loginPassword" class="form-control" name="password" placeholder="Password" required>
-                                <!--<div class="checkbox">
-                                    <label>
-                                        <input type="checkbox" value="remember-me"> Remember me
-                                    </label>
-                                </div>-->
                                 <button class="btn btn-default btn-block" type="submit">Login</button>
                             </form>
                         </div>
@@ -228,7 +217,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <div id="logoDivAbout"><img src="images/skateboard-marker2.png"></img></div>
+                    <div id="logoDivAbout"><img src="images/skateboard.png"></img></div>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="myModalLabel">Spots</h4>
                 </div>
@@ -263,6 +252,12 @@
 
     <script type="text/javascript">
 
+        // var locationCoords = [{
+        //     'Vienna': {x: 16.363449, y: 48.210033},
+        //     'Dublin': {x: -6.266155, y: 53.350140},
+        //     'New York': {x: -73.935242, y: 40.730610}
+        // }]
+
         // map definition
         var map = new ol.Map({
             target: 'map',
@@ -272,7 +267,7 @@
                 })
             ],
             view: new ol.View({
-                // center: ol.proj.fromLonLat([0, 0]),
+                // default center on Vienna
                 center: ol.proj.fromLonLat([16.363449, 48.210033]),
                 zoom: 13
             })
@@ -340,20 +335,20 @@
         var userMarker = new ol.style.Style({
             image: new ol.style.Icon(({
                 // anchor: [0.5, 46],
+                // opacity: 0.65,
                 anchorXUnits: 'fraction',
                 anchorYUnits: 'pixels',
-                // opacity: 0.65,
-                src: 'images/skateboard-marker.png'
+                src: 'images/skateboarder.png'
             }))
         });
 
         var spotMarker = new ol.style.Style({
             image: new ol.style.Icon(({
                 // anchor: [0.5, 46],
+                // opacity: 0.65,
                 anchorXUnits: 'fraction',
                 anchorYUnits: 'pixels',
-                // opacity: 0.65,
-                src: 'images/skateboard-marker2.png'
+                src: 'images/skateboard.png'
             }))
         });
 
@@ -371,15 +366,14 @@
         }
 
         // add spots to map
-        var vectorSource;
+        var vectorSourceSpots;
         function addSpotsToMap(spots) {
             try {
-                vectorSource.clear();
+                vectorSourceSpots.clear();
             } catch (error) {}
             var features = [];
             for (i in spots) {
                 var spot = spots[i];
-                // console.log(spot);
                 var coords = spot['coords'];
                 var lat = parseFloat(coords.split(',')[0]);
                 var lng = parseFloat(coords.split(',')[1]);
@@ -395,11 +389,11 @@
                 iconFeature.setStyle(spotMarker);
                 features.push(iconFeature);
             }
-            vectorSource = new ol.source.Vector({
+            vectorSourceSpots = new ol.source.Vector({
                 features: features
             });
             vectorLayer = new ol.layer.Vector({
-                source: vectorSource
+                source: vectorSourceSpots
             });
             map.addLayer(vectorLayer); 
         }
@@ -415,7 +409,6 @@
             // populate hidden coords form field
             $('#coords').val(lat + ',' + lng);
             $.get( "https://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+","+lng+"&key=AIzaSyAnejEJ27RlESS7fjGHXEp0h_jz3dMFf58", function(data) {
-                // console.log(data);
                 if (data['status'] === 'OK') {
                     var fullAddress = data['results'][0]['formatted_address'];
                     console.log(fullAddress);
@@ -451,6 +444,36 @@
         $('.closeMe').on('click', function(){
             if($('.navbar-collapse').hasClass('in')) {
                 $(".navbar-collapse").collapse('hide');
+            }
+        });
+
+        // slide up flash messages after 5 seconds
+        function hideMessages() {
+            $('#messages').slideUp();
+        }
+        setTimeout(hideMessages, 5000);
+
+        // hide username error message
+        $('#userNameError').hide();
+
+        // check username 
+        $('#userName').focusout(function(){
+            var username = $('#userName').val();
+            if (username) {
+                $.get( "users/checkUsername/" + username, function(data) {
+                    if (data.result == 'false') {
+                        // no user found, allow form submit
+                        $('#userNameGroup').removeClass('has-error');
+                        $('#userNameGroup').addClass('has-success');
+                        $('#userNameError').fadeOut();
+                        $('#regSubmit').prop('disabled', false);
+                    } else {
+                        // user found, alert and prevent form submit
+                        $('#userNameGroup').addClass('has-error');
+                        $('#userNameError').fadeIn();
+                        $('#regSubmit').prop('disabled', true);
+                    }
+                });
             }
         });
 

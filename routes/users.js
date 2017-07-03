@@ -10,21 +10,28 @@ const User = require('../models/user.model')
 
 // required for redirect after user registration
 router.get('/', function(req, res, next){
-    res.render('index.html');
+    res.render('index.html', {messages: req.flash('error')});
 });
 
 // register user
 router.post('/', function(req, res, next){
-    req.checkBody('username', 'username is required field').notEmpty();
-    req.checkBody('password', 'password is required field').notEmpty();
-    req.checkBody('confirmPassword', 'confirm password is required field').notEmpty();
+    // should not need these with front end validation
+    // only password matching error should be displayed 
+    req.checkBody('username', '').notEmpty();
+    req.checkBody('password', '').notEmpty();
+    req.checkBody('confirmPassword', '').notEmpty();
     req.checkBody('password', 'passwords do not match').equals(req.body.confirmPassword);
-    req.checkBody('email', 'email is required field').notEmpty();
-    req.checkBody('email', 'email is not valid').isEmail();
-    req.checkBody('location', 'location is required field').notEmpty();
+    req.checkBody('email', '').notEmpty();
+    req.checkBody('email', '').isEmail();
+    req.checkBody('location', '').notEmpty();
     var errors = req.validationErrors();
+    var error_message = [];
     if (errors) {
-        res.render('index.html', {errors:errors});
+        for (i in errors) {
+            error_message.push(errors[i].msg);
+        }
+        req.flash('error', error_message.join(', '));
+        res.redirect('/');
     } else {
         var newUser = new User({
             username: req.body.username,
@@ -39,10 +46,14 @@ router.post('/', function(req, res, next){
                 newUser.password = hash;
                 newUser.save(function(err, upload) {
                     if (err) return console.error(err);
-                    console.log('User successfully registered')
-                    req.flash('success', 'You have been successfully registered')
+                    console.log('User successfully registered');
+                    req.flash('success', 'You have successfully registered');
+                    passport.authenticate('local', {
+                        successRedirect: '/',
+                        failureRedirect: '/',
+                        failureflash: true
+                    })(req, res, next);
                 })
-                res.redirect('/');
             });
         });
     }
@@ -54,7 +65,12 @@ router.post('/login', function(req, res, next){
     req.checkBody('password', 'password is required field').notEmpty();
     var errors = req.validationErrors();
     if (errors) {
-        res.render('index.html', {errors:errors});
+        var error_message = [];
+        for (i in errors) {
+            error_message.push(errors[i].msg);
+        }
+        req.flash('error', error_message.join(', '));
+        res.redirect('/');
     } else {
         passport.authenticate('local', {
             successRedirect: '/',
@@ -62,6 +78,19 @@ router.post('/login', function(req, res, next){
             failureflash: true
         })(req, res, next);
     }
+});
+
+// check if username exists
+router.get('/checkUsername/:username',function(req, res, next){
+    var username = req.params.username;
+    User.findOne({username:username}, function(err, user){
+        if (err) return console.error(err);
+        if (user) {
+            res.json({result: 'true'});
+        } else {
+            res.json({result: 'false'});
+        }
+    });
 });
 
 

@@ -9,7 +9,6 @@ module.exports = function(passport) {
         User.findOne({username:username}, function(err, user){
             if (err) return console.error(err);
             if (!user) {
-                // return done(null, false, {errors: [{msg: 'incorrect credentials'}]});
                 return done(null, false, {message: 'incorrect credentials'});
             }
             // match password
@@ -18,7 +17,6 @@ module.exports = function(passport) {
                 if (isMatch) {
                     return done(null, user);
                 } else {
-                    // return done(null, false, {errors: [{msg: 'incorrect credentials'}]});             
                     return done(null, false, {message: 'incorrect credentials'});             
                 }
             });

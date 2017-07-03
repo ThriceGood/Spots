@@ -27,8 +27,13 @@ router.post('/', authenticate, function(req, res, next){
     req.checkBody('address', 'address is required field').notEmpty();
     req.checkBody('description', 'description is required field').notEmpty();
     var errors = req.validationErrors();
+    var error_message = [];
     if (errors) {
-        res.render('index.html', {errors:errors});
+        for (i in errors) {
+            error_message.push(errors[i].msg);
+        }
+        req.flash('error', error_message.join(', '));
+        res.redirect('/');
     } else {
         User.findById(req.user._id, function(err, user){
             if (err) return console.error(err);
@@ -43,7 +48,6 @@ router.post('/', authenticate, function(req, res, next){
             spot.save(function(err, upload) {
                 if (err) return console.error(err);
                 console.log('spot successfully saved');
-                req.flash('success', 'spot successfully added');
             })
             res.redirect('/');
         });

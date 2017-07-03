@@ -46,10 +46,48 @@
     display: none;
 }
 
+#userNameError {
+    text-align: center;
+}
+
 /*map style*/
 
 #map {
     height: 85%;
+    padding-top: 10px;
+}
+
+/*mesages*/
+
+#messages ul {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+#messages .success li {
+    opacity: 0.6;
+    margin: auto;
+    padding: 5 20 5 20;
+    list-style: none;
+    background-color: #dff0d8;
+    color: #3c763d;
+    border: 1px solid #d6e9c6;
+    border-radius: 5px;
+    width: 60%;
+    text-align: center;
+}
+
+#messages .error li {
+    opacity: 0.6;
+    margin: auto;
+    padding: 5 20 5 20;
+    list-style: none;
+    background-color: #f2dede;
+    color: #a94442;
+    border: 1px solid #ebccd1;
+    border-radius: 5px;
+    width: 60%;
+    text-align: center;
 }
 
 /*footer*/
@@ -70,5 +108,9 @@
 
     #logoDiv {
         margin-right: 10px;
+    }
+
+    #messages .error .success li {
+        width: 100%;
     }
 }
