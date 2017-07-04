@@ -77,9 +77,9 @@ function validateSpotInput(req) {
 }
 
 function savePhoto(photo, userId) {
-    console.log('attempting to save photo to file system');    
     var timestamp = Math.round((new Date()).getTime() / 1000);
     var photoname = userId + - + timestamp + '.png';
+    console.log('attempting to save ' + photoname + ' to file system');
     jimp.read(photo.data, function (err, photo) {
         console.log('jimp reading...');
         if (err) throw err;
