@@ -46,9 +46,9 @@ router.post('/', function(req, res, next){
     }
 });
 
-function validateRegistrationInput(req, errors = false) {
+function validateRegistrationInput(req=false, errors=false) {
     // allow errors to be passed in, for login validation
-    if (!errors) {
+    if (req) {
         req.checkBody('username', '').notEmpty();
         req.checkBody('password', '').notEmpty();
         req.checkBody('confirmPassword', '').notEmpty();
@@ -74,7 +74,7 @@ router.post('/login', function(req, res, next){
     req.checkBody('username', 'username is required field').notEmpty();
     req.checkBody('password', 'password is required field').notEmpty();
     var errors = req.validationErrors();
-    var error_message = validateRegistrationInput(req, errors);
+    var error_message = validateRegistrationInput(errors);
     if (error_message) {
         req.flash('error', error_message.join(', '));
         res.redirect('/');
