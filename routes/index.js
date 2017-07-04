@@ -23,24 +23,20 @@ router.get('/getSpots', function(req, res, next){
 
 // save spots
 router.post('/', authenticate, function(req, res, next){
-    console.log('save spot endpoint request');
     var error_message = validateSpotInput(req);
     if (error_message) {
         req.flash('error', error_message.join(', '));
         res.redirect('/');
     } else {
-        console.log('no validation errors');    
         User.findById(req.user._id, function(err, user){
             if (err) throw err;;
             // save photo
             var photo = req.files.photo;
-            console.log(photo.name);    
             var photoname = '';
             if (photo) {
                 // photoname = savePhoto(photo, req.user._id);
-                photoname = test(photo, req.user._id);
+                photoname = resizeAndSavePhoto(photo, req.user._id);
             }
-            console.log('jimp has uploaded file: ' + photoname);
             // save spot
             var spot = new Spot({
                 coords: req.body.coords,
@@ -77,24 +73,22 @@ function validateSpotInput(req) {
     }
 }
 
-function test(photo, userId) {
+function savePhoto(photo, userId) {
     var timestamp = Math.round((new Date()).getTime() / 1000);
     var photoname = userId + - + timestamp + '.png';
-    console.log('attempting to save ' + photoname + ' to file system');
     photo.mv('public/uploads/' + photoname, function(err) {
         if (err) throw err;
-        console.log('file has been saved to file system');
     });
     return photoname;
 }
 
-function savePhoto(photo, userId) {
+// jimp not working on digitalocean for some reason
+function resizeAndSavePhoto(photo, userId) {
     var timestamp = Math.round((new Date()).getTime() / 1000);
     var photoname = userId + - + timestamp + '.png';
-    console.log('attempting to save ' + photoname + ' to file system');
     jimp.read(photo.data, function (err, photo) {
-        console.log('jimp reading...');
-        if (err) throw err;
+        // if (err) throw err;
+        if (err) console.log(err);
         photo.resize(400, jimp.AUTO)            
             .quality(70)
             .write("public/uploads/" + photoname);
