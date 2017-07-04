@@ -23,19 +23,23 @@ router.get('/getSpots', function(req, res, next){
 
 // save spots
 router.post('/', authenticate, function(req, res, next){
+    console.log('save spot endpoint request');
     var error_message = validateSpotInput(req);
     if (error_message) {
         req.flash('error', error_message.join(', '));
         res.redirect('/');
     } else {
+        console.log('no validation errors');    
         User.findById(req.user._id, function(err, user){
             if (err) throw err;;
             // save photo
             var photo = req.files.photo;
+            console.log(photo.name);    
             var photoname = '';
             if (photo) {
                 photoname = savePhoto(photo, req.user._id);
             }
+            console.log('jimp has uploaded file: ' + photoname);
             // save spot
             var spot = new Spot({
                 coords: req.body.coords,
@@ -73,9 +77,11 @@ function validateSpotInput(req) {
 }
 
 function savePhoto(photo, userId) {
+    console.log('attempting to save photo to file system');    
     var timestamp = Math.round((new Date()).getTime() / 1000);
     var photoname = userId + - + timestamp + '.png';
     jimp.read(photo.data, function (err, photo) {
+        console.log('jimp reading...');
         if (err) throw err;
         photo.resize(400, jimp.AUTO)            
             .quality(70)

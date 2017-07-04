@@ -48,6 +48,7 @@ router.post('/', function(req, res, next){
 
 function validateRegistrationInput(req=false, errors=false) {
     // allow errors to be passed in, for login validation
+    // if not req then its a login validation with passed in errors
     if (req) {
         req.checkBody('username', '').notEmpty();
         req.checkBody('password', '').notEmpty();
