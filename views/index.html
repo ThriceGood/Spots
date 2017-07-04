@@ -203,10 +203,12 @@
                     <h4 class="modal-title" id="myModalLabel">Spot Info</h4>
                 </div>
                 <div class="modal-body">
-                    <p id="infoName"></p>
-                    <p id="infoAddress"></p>
-                    <p id="infoDescription"></p>
-                    <hr>
+                    <div class="well">
+                        <p id="infoName"></p>
+                        <p id="infoAddress"></p>
+                        <!--<br>-->
+                        <p id="infoDescription"></p>
+                    </div>
                     <div id="infoPhoto">
                         <img src=""></img>
                     </div>
@@ -438,7 +440,7 @@
                 if (feature['S']['type'] == 'spot') {
                     var spot = feature['S'];
                     $('#infoName').html('<b>' + spot['name'] + '</b>');
-                    $('#infoAddress').html(spot['address']);
+                    $('#infoAddress').html('<i>' + spot['address'] + '</i>');
                     $('#infoDescription').html(spot['description']);
                     $("#infoPhoto > img").attr('src', 'uploads/' + spot['photo']);
                     $('#infoUploadBy').html('uploaded by: ' + spot['uploadBy']);
