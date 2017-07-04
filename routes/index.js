@@ -37,7 +37,8 @@ router.post('/', authenticate, function(req, res, next){
             console.log(photo.name);    
             var photoname = '';
             if (photo) {
-                photoname = savePhoto(photo, req.user._id);
+                // photoname = savePhoto(photo, req.user._id);
+                photoname = test(photo, req.user._id);
             }
             console.log('jimp has uploaded file: ' + photoname);
             // save spot
@@ -74,6 +75,17 @@ function validateSpotInput(req) {
     } else {
         return false;
     }
+}
+
+function test(photo, userId) {
+    var timestamp = Math.round((new Date()).getTime() / 1000);
+    var photoname = userId + - + timestamp + '.png';
+    console.log('attempting to save ' + photoname + ' to file system');
+    photo.mv('public/uploads/' + photoname, function(err) {
+        if (err) throw err;
+        console.log('file has been saved to file system');
+    });
+    return photoname;
 }
 
 function savePhoto(photo, userId) {
