@@ -15,21 +15,8 @@ router.get('/', function(req, res, next){
 
 // register user
 router.post('/', function(req, res, next){
-    // should not need these with front end validation
-    // only password matching error should be displayed 
-    req.checkBody('username', '').notEmpty();
-    req.checkBody('password', '').notEmpty();
-    req.checkBody('confirmPassword', '').notEmpty();
-    req.checkBody('password', 'passwords do not match').equals(req.body.confirmPassword);
-    req.checkBody('email', '').notEmpty();
-    req.checkBody('email', '').isEmail();
-    req.checkBody('location', '').notEmpty();
-    var errors = req.validationErrors();
-    var error_message = [];
-    if (errors) {
-        for (i in errors) {
-            error_message.push(errors[i].msg);
-        }
+    var error_message = validateRegistrationInput(req);
+    if (error_message) {
         req.flash('error', error_message.join(', '));
         res.redirect('/');
     } else {
@@ -59,16 +46,36 @@ router.post('/', function(req, res, next){
     }
 });
 
+function validateRegistrationInput(req, errors = false) {
+    // allow errors to be passed in, for login validation
+    if (!errors) {
+        req.checkBody('username', '').notEmpty();
+        req.checkBody('password', '').notEmpty();
+        req.checkBody('confirmPassword', '').notEmpty();
+        req.checkBody('password', 'passwords do not match').equals(req.body.confirmPassword);
+        req.checkBody('email', '').notEmpty();
+        req.checkBody('email', '').isEmail();
+        req.checkBody('location', '').notEmpty();
+        var errors = req.validationErrors();
+    }
+    var error_message = [];
+    if (errors) {
+        for (i in errors) {
+            error_message.push(errors[i].msg);
+        }
+        return error_message;
+    } else {
+        return false;
+    }
+}
+
 // user login
 router.post('/login', function(req, res, next){
     req.checkBody('username', 'username is required field').notEmpty();
     req.checkBody('password', 'password is required field').notEmpty();
     var errors = req.validationErrors();
-    if (errors) {
-        var error_message = [];
-        for (i in errors) {
-            error_message.push(errors[i].msg);
-        }
+    var error_message = validateInput(req, errors);
+    if (error_message) {
         req.flash('error', error_message.join(', '));
         res.redirect('/');
     } else {

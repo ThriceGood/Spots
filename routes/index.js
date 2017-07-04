@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
+const jimp = require('jimp');
 
 // import models
 const Spot = require('../models/spot.model')
@@ -22,33 +23,20 @@ router.get('/getSpots', function(req, res, next){
 
 // save spots
 router.post('/', authenticate, function(req, res, next){
-    req.checkBody('coords', 'coords was not populated').notEmpty();
-    req.checkBody('name', 'name is required field').notEmpty();
-    req.checkBody('address', 'address is required field').notEmpty();
-    req.checkBody('description', 'description is required field').notEmpty();
-    var errors = req.validationErrors();
-    var error_message = [];
-    if (errors) {
-        for (i in errors) {
-            error_message.push(errors[i].msg);
-        }
+    var error_message = validateSpotInput(req);
+    if (error_message) {
         req.flash('error', error_message.join(', '));
         res.redirect('/');
     } else {
         User.findById(req.user._id, function(err, user){
             if (err) throw err;;
-            // upload photo
+            // save photo
             var photo = req.files.photo;
             var photoname = '';
             if (photo) {
-                var timestamp = Math.round((new Date()).getTime() / 1000);
-                photoname = req.user._id + - + timestamp + '.png';
-                photo.mv('public/uploads/' + photoname, function(err) {
-                    if (err) throw err;
-                    console.log('file uploaded')
-                });
+                photoname = savePhoto(photo, req.user._id);
             }
-            // create spot
+            // save spot
             var spot = new Spot({
                 coords: req.body.coords,
                 name: req.body.name,
@@ -66,6 +54,35 @@ router.post('/', authenticate, function(req, res, next){
         });
     }
 });
+
+function validateSpotInput(req) {
+    req.checkBody('coords', 'coords was not populated').notEmpty();
+    req.checkBody('name', 'name is required field').notEmpty();
+    req.checkBody('address', 'address is required field').notEmpty();
+    req.checkBody('description', 'description is required field').notEmpty();
+    var errors = req.validationErrors();
+    var error_message = [];
+    if (errors) {
+        for (i in errors) {
+            error_message.push(errors[i].msg);
+        }
+        return error_message;
+    } else {
+        return false;
+    }
+}
+
+function savePhoto(photo, userId) {
+    var timestamp = Math.round((new Date()).getTime() / 1000);
+    var photoname = userId + - + timestamp + '.png';
+    jimp.read(photo.data, function (err, photo) {
+        if (err) throw err;
+        photo.resize(400, jimp.AUTO)            
+            .quality(70)
+            .write("public/uploads/" + photoname);
+    });
+    return photoname;
+}
 
 function authenticate(req, res, next) {
     if (req.isAuthenticated()) {
