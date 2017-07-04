@@ -34,8 +34,9 @@ router.post('/', authenticate, function(req, res, next){
             var photo = req.files.photo;
             var photoname = '';
             if (photo) {
-                // photoname = savePhoto(photo, req.user._id);
-                photoname = resizeAndSavePhoto(photo, req.user._id);
+                // currently just saving full size photos
+                photoname = savePhoto(photo, req.user._id);
+                // photoname = resizeAndSavePhoto(photo, req.user._id);
             }
             // save spot
             var spot = new Spot({
@@ -87,8 +88,7 @@ function resizeAndSavePhoto(photo, userId) {
     var timestamp = Math.round((new Date()).getTime() / 1000);
     var photoname = userId + - + timestamp + '.png';
     jimp.read(photo.data, function (err, photo) {
-        // if (err) throw err;
-        if (err) console.log(err);
+        if (err) throw err;
         photo.resize(400, jimp.AUTO)            
             .quality(70)
             .write("public/uploads/" + photoname);
