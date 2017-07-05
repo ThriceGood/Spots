@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const jimp = require('jimp');
+const sharp = require('sharp');
 
 // import models
 const Spot = require('../models/spot.model')
@@ -29,13 +30,14 @@ router.post('/', authenticate, function(req, res, next){
         res.redirect('/');
     } else {
         User.findById(req.user._id, function(err, user){
-            if (err) throw err;;
+            if (err) throw err;
             // save photo
             var photo = req.files.photo;
             var photoname = '';
             if (photo) {
+                photoname = resizeAndSavePhotoWithSharp(photo, req.user._id);                
                 // currently just saving full size photos
-                photoname = savePhoto(photo, req.user._id);
+                // photoname = savePhoto(photo, req.user._id);
                 // photoname = resizeAndSavePhoto(photo, req.user._id);
             }
             // save spot
@@ -92,6 +94,18 @@ function resizeAndSavePhoto(photo, userId) {
         photo.resize(400, jimp.AUTO)            
             .quality(70)
             .write("public/uploads/" + photoname);
+    });
+    return photoname;
+}
+
+function resizeAndSavePhotoWithSharp(photo, userId) {
+    var timestamp = Math.round((new Date()).getTime() / 1000);
+    var photoname = userId + - + timestamp + '.png';
+    sharp(photo.data)
+        .resize(400)
+        .png()
+        .toFile('public/uploads/' + photoname, function(err) {
+            if (err) throw err;
     });
     return photoname;
 }
