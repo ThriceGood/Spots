@@ -23,18 +23,25 @@ router.get('/getSpots', function(req, res, next){
 
 // save spots
 router.post('/', authenticate, function(req, res, next){
+    console.log('request');
     var error_message = validateSpotInput(req);
     if (error_message) {
         req.flash('error', error_message.join(', '));
         res.redirect('/');
     } else {
+        console.log('no errors');    
         User.findById(req.user._id, function(err, user){
             if (err) throw err;
             // save photo
             var photo = req.files.photo;
             var photoname = '';
+            console.log(phot.name);
+            if (phot.data) {
+                console.log('photo has data');                
+            }            
             if (photo) {
                 photoname = resizeAndSavePhoto(photo, req.user._id);                
+                console.log('photo saved: ' + photoname);                
             }
             // save spot
             var spot = new Spot({
@@ -97,7 +104,8 @@ function authenticate(req, res, next) {
     if (req.isAuthenticated()) {
         return next();
     } else {
-        res.redirect('/')
+        req.flash('error', 'you are not logged in');
+        res.redirect('/');
     }
 }
 
