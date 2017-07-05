@@ -259,12 +259,6 @@
 
     <script type="text/javascript">
 
-        // var locationCoords = [{
-        //     'Vienna': {x: 16.363449, y: 48.210033},
-        //     'Dublin': {x: -6.266155, y: 53.350140},
-        //     'New York': {x: -73.935242, y: 40.730610}
-        // }]
-
         // map definition
         var map = new ol.Map({
             target: 'map',
@@ -281,6 +275,22 @@
         });
 
         var mapView = map.getView();
+
+        // set center if user is logged in, only on desktop browser
+        $(function() {
+            // should probably move this to the backend and put x/y in the div
+            locationCoords = {
+                'Vienna': {x: 16.363449, y: 48.210033},
+                'Dublin': {x: -6.266155, y: 53.350140},
+                'New York': {x: -73.935242, y: 40.730610}
+            }
+            userLoc = $('#userLocation').html();
+            if (userLoc && !isMobile) {
+                var lat = locationCoords[userLoc]['y'];
+                var lng = locationCoords[userLoc]['x'];
+                mapView.setCenter(ol.proj.fromLonLat([lng, lat]));
+            }
+        });
 
         // geolocation object
         const geo = navigator.geolocation;
@@ -313,27 +323,31 @@
             mapView.setZoom(13);
         }
 
-        // zoom to my location
+        // zoom to my location and add user marker (find me)
         function findMe() {
             geo.getCurrentPosition(setUserLocation, failure);
             mapView.setZoom(18);
         }
 
+        var vectorSourceUser;
         function setUserLocation(position) {
-            features = [];
-            lat = position.coords.latitude;
-            lng = position.coords.longitude;
+            try {
+                vectorSourceUser.clear();
+            } catch (error) {}
+            var features = [];
+            var lat = position.coords.latitude;
+            var lng = position.coords.longitude;
             mapView.setCenter(ol.proj.fromLonLat([lng, lat]));
-            iconFeature = new ol.Feature({
+            var iconFeature = new ol.Feature({
                 geometry: new ol.geom.Point(ol.proj.fromLonLat([lng, lat])),
             });  
             iconFeature.setStyle(userMarker);
             features.push(iconFeature);
-            vectorSource = new ol.source.Vector({
+            vectorSourceUser = new ol.source.Vector({
                 features: features
             });
-            vectorLayer = new ol.layer.Vector({
-                source: vectorSource
+            var vectorLayer = new ol.layer.Vector({
+                source: vectorSourceUser
             });
             map.addLayer(vectorLayer); 
         }
@@ -384,7 +398,7 @@
                 var coords = spot['coords'];
                 var lat = parseFloat(coords.split(',')[0]);
                 var lng = parseFloat(coords.split(',')[1]);
-                iconFeature = new ol.Feature({
+                var iconFeature = new ol.Feature({
                     geometry: new ol.geom.Point(ol.proj.fromLonLat([lng, lat])),
                     type: 'spot',
                     name: spot['name'],
@@ -400,7 +414,7 @@
             vectorSourceSpots = new ol.source.Vector({
                 features: features
             });
-            vectorLayer = new ol.layer.Vector({
+            var vectorLayer = new ol.layer.Vector({
                 source: vectorSourceSpots
             });
             map.addLayer(vectorLayer); 
@@ -497,7 +511,7 @@
         }
 
         // if not mobile
-        var isMobile = true;
+        isMobile = true;
         if(! /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
             $('#addSpotButton').hide();
             $('#findMeButton').hide();
