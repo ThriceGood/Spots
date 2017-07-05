@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-const jimp = require('jimp');
 const sharp = require('sharp');
 
 // import models
@@ -35,10 +34,7 @@ router.post('/', authenticate, function(req, res, next){
             var photo = req.files.photo;
             var photoname = '';
             if (photo) {
-                photoname = resizeAndSavePhotoWithSharp(photo, req.user._id);                
-                // currently just saving full size photos
-                // photoname = savePhoto(photo, req.user._id);
-                // photoname = resizeAndSavePhoto(photo, req.user._id);
+                photoname = resizeAndSavePhoto(photo, req.user._id);                
             }
             // save spot
             var spot = new Spot({
@@ -76,29 +72,7 @@ function validateSpotInput(req) {
     }
 }
 
-function savePhoto(photo, userId) {
-    var timestamp = Math.round((new Date()).getTime() / 1000);
-    var photoname = userId + - + timestamp + '.png';
-    photo.mv('public/uploads/' + photoname, function(err) {
-        if (err) throw err;
-    });
-    return photoname;
-}
-
-// jimp not working on digitalocean for some reason
 function resizeAndSavePhoto(photo, userId) {
-    var timestamp = Math.round((new Date()).getTime() / 1000);
-    var photoname = userId + - + timestamp + '.png';
-    jimp.read(photo.data, function (err, photo) {
-        if (err) throw err;
-        photo.resize(400, jimp.AUTO)            
-            .quality(70)
-            .write("public/uploads/" + photoname);
-    });
-    return photoname;
-}
-
-function resizeAndSavePhotoWithSharp(photo, userId) {
     var timestamp = Math.round((new Date()).getTime() / 1000);
     var photoname = userId + - + timestamp + '.png';
     sharp(photo.data)
@@ -106,6 +80,15 @@ function resizeAndSavePhotoWithSharp(photo, userId) {
         .png()
         .toFile('public/uploads/' + photoname, function(err) {
             if (err) throw err;
+    });
+    return photoname;
+}
+
+function savePhoto(photo, userId) {
+    var timestamp = Math.round((new Date()).getTime() / 1000);
+    var photoname = userId + - + timestamp + '.png';
+    photo.mv('public/uploads/' + photoname, function(err) {
+        if (err) throw err;
     });
     return photoname;
 }
