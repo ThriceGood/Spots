@@ -310,8 +310,8 @@
         function failure(error) {
             console.log(error.message);
             // if location failure disable location features
-            // $('#addSpotButton').hide();
-            // $('#findMeButton').hide();
+            $('#addSpotButton').hide();
+            $('#findMeButton').hide();
             if (isMobile) {
                 alert('geolocation failed, spot sharing is disabled');
             }
@@ -505,8 +505,8 @@
         // if not mobile
         isMobile = true;
         if(! /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
-            // $('#addSpotButton').hide();
-            // $('#findMeButton').hide();
+            $('#addSpotButton').hide();
+            $('#findMeButton').hide();
             isMobile = false;
         }
 
