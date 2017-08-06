@@ -193,6 +193,7 @@
         function editSpot(spotId) {
             for (i in spotsCache) {
                 if (spotsCache[i]._id == spotId) {
+                    console.log(spotsCache[i]);
                     $('#spotId').val(spotId)
                     $('#name').val(spotsCache[i].name);
                     $('#address').val(spotsCache[i].address);
