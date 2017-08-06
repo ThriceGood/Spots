@@ -118,6 +118,25 @@
     border-top: 1px solid #e5e5e5;
 }
 
+/*admin*/
+
+#adminTable {
+    margin-top: 50px;
+}
+
+#adminTable img {
+    width: 100px;
+    height: auto;
+}
+
+.leftBtn {
+    margin-right: 10px;
+}
+
+#adminTable > tbody > tr > td {
+     vertical-align: middle;
+}
+
 /*media query*/
 @media(max-width: 768px) {
     .divider {

@@ -1,0 +1,245 @@
+<html>
+  <head>
+
+    <title>Spots</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--jquery-->
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>    
+    <!--bootrap-->
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!--openlayers-->
+    <link rel="stylesheet" href="openlayers/ol.css">
+    <script src="openlayers/ol.js"></script>
+    <!--custom css-->
+    <link rel="stylesheet" href="css/style.css">
+
+  </head>
+  <body>
+    
+    <!-- Static navbar -->
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand closeMe" href="/"><div id="logoDiv"><img src="images/skateboard.png"></img></div> Spots</a>
+        </div>
+         <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="#" onclick="showSpotTable()" class="closeMe" data-toggle="modal" data-target="#aboutModal">spots</a></li>
+            <li><a href="#" onclick="showUserTable()" class="closeMe" data-toggle="modal" data-target="#aboutModal">users</a></li>
+        </div>
+      </div>
+    </nav>
+
+    <!--content-->
+    <div class="container">
+
+        <!--display messages-->
+        <div>
+            <%- messages() %>
+        </div>
+
+        <!--table container-->
+        <div>
+            <table id="adminTable" class="table table-hover text-center">
+                
+            </table>
+        </div>
+
+    </div> <!-- /container -->
+
+    <!-- add spot modal -->
+    <div class="modal fade" id="spotModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Add Spot</h4>
+                </div>
+                <form action="/" method="POST" encType="multipart/form-data">
+                    <!--modal content-->
+                    <div class="modal-body">
+                        <input type="hidden" id="coords" name="coords">
+                        <div class="form-group">
+                            <label for="title">Name</label>
+                            <input required type="text" class="form-control" id="name" name="name" placeholder="name the spot...">
+                        </div>
+                        <div class="form-group">
+                            <label for="address">Address</label>
+                            <input required type="text" class="form-control" id="address" name="address" placeholder="enter the address">
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <textarea required maxlength="150" class="form-control" rows="5" id="description" name="description" placeholder="describe the spot..."></textarea>
+                        </div>
+                        <div class="form-group" id="photoGroup">
+                            <label for="photo" class="btn btn-default">
+                                Add Photo <input required type="file" id="photo" name="photo" hidden>
+                            </label>
+                            <span id="noPhotoError" class="help-block">a photo is required</span>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-default" onclick="checkPhoto()">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!--spot info modal-->
+    <div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Spot Info</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="well">
+                        <p id="infoName"></p>
+                        <p id="infoAddress"></p>
+                        <!--<br>-->
+                        <p id="infoDescription"></p>
+                    </div>
+                    <div id="infoPhoto">
+                        <img src=""></img>
+                    </div>
+                    <hr>
+                    <p style="font-size:11;"><i id="infoUploadBy"></i></p>
+                </div>
+            </div>
+        </div>spots
+    </div>
+
+    <script type="text/javascript">
+
+        function showSpotTable() {
+            $.get( "/getSpots", function(data) {
+                buildSpotTable(data);
+            });
+        }
+
+        function buildSpotTable(spots) {
+            var table = $('#adminTable');
+            var html = `
+                <thead>
+                    <tr>
+                        <th class="text-center">Name</th>
+                        <th class="text-center">Upload By</th>
+                        <th class="text-center">Upload Date</th>
+                        <th class="text-center">Photo</th>
+                        <th class="text-center" ></th>
+                    </tr>
+                </thead>
+                <tbody>
+            `;
+            for (i in spots) {
+                html += `
+                    <tr>
+                        <td>`+ spots[i].name +`</td>
+                        <td>`+ spots[i].uploadBy +`</td>
+                        <td>`+ spots[i].uploadDate.split('T')[0] +`</td>
+                        <td><img id="`+ spots[i].name.replace(/ /g, '_') +`" src="uploads/`+ spots[i].photo +`"></td>
+                        <td><button class="btn btn-default leftBtn">Edit</button><button onclick='deleteSpot("`+ spots[i].name +`")' class="btn btn-danger">Delete</button></td>
+                    </tr>
+                `;
+            }
+            html += '<tbody>';
+            table.html(html);
+        }
+
+        function deleteSpot(spotname) {
+            var image = $('#'+ spotname.replace(/ /g, '_'));
+            // use to delete image from file system
+            var imageName = image.prop('src').split('/')[4]
+            $.ajax({
+                url: "/admin/deleteSpot/" + spotname,
+                type: 'DELETE',
+                success: function() { showSpotTable(); },
+            });
+        }
+
+        function showUserTable() {
+            $.get( "/admin/getUsers", function(data) {
+                buildUserTable(data);
+            });
+        }
+
+        function buildUserTable(users) {
+            var table = $('#adminTable');
+            var html = `
+                <thead>
+                    <tr>
+                        <th class="text-center">Username</th>
+                        <th class="text-center">Email</th>
+                        <th class="text-center">Location</th>
+                        <th class="text-center">Join Date</th>
+                        <th class="text-center"></th>
+                    </tr>
+                </thead>
+                <tbody>
+            `;
+            for (i in users) {
+                if (users[i].isAdmin) continue;
+                html += `
+                    <tr>
+                        <td>`+ users[i].username +`</td>
+                        <td>`+ users[i].email +`</td>
+                        <td>`+ users[i].location +`</td>
+                        <td>`+ users[i].joinDate.split('T')[0] +`</td>
+                        <td><button class="btn btn-default leftBtn">Edit</button><button onclick='deleteUser("`+ users[i].username +`")' class="btn btn-danger">Delete</button></td>
+                    </tr>
+                `;
+            }
+            html += '<tbody>';
+            table.html(html);
+        }
+
+        function deleteUser(username) {
+            $.ajax({
+                url: "/admin/deleteUser/" + username,
+                type: 'DELETE',
+                success: function() { showUserTable(); },
+            });
+        }
+
+        $(function() {
+            showSpotTable();
+        });
+
+        // collaps navbar after click
+        $('.closeMe').on('click', function(){
+            if($('.navbar-collapse').hasClass('in')) {
+                $(".navbar-collapse").collapse('hide');
+            }
+        });
+
+        // slide up flash messages after 5 seconds
+        function hideMessages() {
+            $('#messages').slideUp();
+        }
+        setTimeout(hideMessages, 5000);
+        
+        // check photo
+        function checkPhoto() {
+            var photoVal = $('#photo').val();
+            if (!photoVal) {
+                $('#photoGroup').addClass('has-error');
+            }
+        }
+
+    </script>
+
+  </body>
+
+</html>

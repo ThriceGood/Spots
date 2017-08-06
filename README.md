@@ -2,7 +2,6 @@
 Spots is a website for sharing skatespots directly from a users location.
 -------------------------------------------------------------------------
 
-<p style="text-align: justify;">
 It is mainly intended to be used on a mobile device. A users location is gotten using the HTML5 geolocation API and the Google Geocode API. Location based features are disabled when a user is on a desktop browser.
 
 (As of now, location features only work with Android Firefox browser. Possibly because the site is currently not set up with https)
@@ -14,7 +13,6 @@ The application uses a Node.js/Express backend with a MongoDB/Mongoose database 
 The application consistes of a single page with the forms displaying dynamically in modal boxes.
 
 Here is the main page as seen from a desktop browser. From a desktop the user can only view spots and register to the site.
-</p>
 
 ![alt tag](https://raw.githubusercontent.com/ThriceGood/Spots/master/readme_images/index_big.png)
 

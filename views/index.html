@@ -57,6 +57,9 @@
             <% if (user) { %>
                 <li><a href="#" class="closeMe" id="addSpotButton" data-toggle="modal" data-target="#spotModal">add spot</a></li>
             <% } %>
+            <% if (user && user.isAdmin) { %>
+                <li><a href="/admin">admin</a></li>            
+            <% } %>
           </ul>
         </div><!--/.nav-collapse -->
       </div>

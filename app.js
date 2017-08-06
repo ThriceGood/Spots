@@ -27,6 +27,7 @@ db.on('error', function(err){
 // import routes
 const index = require('./routes/index');
 const users = require('./routes/users');
+const admin = require('./routes/admin');
 
 // initialize app
 const app = express()
@@ -91,6 +92,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // set routes
 app.use('/', index)
 app.use('/users', users)
+app.use('/admin', admin)
 
 // start app
 app.listen(3000, function () {

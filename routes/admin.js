@@ -8,20 +8,31 @@ const Spot = require('../models/spot.model')
 const User = require('../models/user.model')
 
 
-// index route
-router.get('/', function(req, res, next){
-    res.render('index.html');
+// admin route
+router.get('/', authenticate, function(req, res, next){
+    res.render('admin.html');
 });
 
-// get all spots route
-router.get('/getSpots', function(req, res, next){
-    Spot.find({}, function (err, spots) {
+// get all users route
+router.get('/getUsers', authenticate, function(req, res, next){
+    User.find({}, function (err, users) {
         if (err) return handleError(err);
-        res.json(spots);
+        res.json(users);
     });
 });
 
-// save spots
+router.delete('/deleteUser/:username', authenticate, function(req, res, next) {
+    User.remove({username: req.params.username}, function(err) {
+        if (err) {
+            res.json({message: err});
+        } else {
+            res.json({message: 'user deleted'});
+        }
+    });
+});
+
+// TODO: still to implement updates
+// update spots
 router.post('/', authenticate, function(req, res, next){
     var error_message = validateSpotInput(req);
     if (error_message) {
@@ -72,29 +83,18 @@ function validateSpotInput(req) {
     }
 }
 
-function resizeAndSavePhoto(photo, userId) {
-    var timestamp = Math.round((new Date()).getTime() / 1000);
-    var photoname = userId + - + timestamp + '.png';
-    sharp(photo.data)
-        .resize(400)
-        .png()
-        .toFile('public/uploads/' + photoname, function(err) {
-            if (err) throw err;
+router.delete('/deleteSpot/:name', authenticate, function(req, res, next) {
+    Spot.remove({name: req.params.name}, function(err) {
+        if (err) {
+            res.json({message: err});
+        } else {
+            res.json({message: 'spot deleted'});
+        }
     });
-    return photoname;
-}
-
-function savePhoto(photo, userId) {
-    var timestamp = Math.round((new Date()).getTime() / 1000);
-    var photoname = userId + - + timestamp + '.png';
-    photo.mv('public/uploads/' + photoname, function(err) {
-        if (err) throw err;
-    });
-    return photoname;
-}
+});
 
 function authenticate(req, res, next) {
-    if (req.isAuthenticated()) {
+    if (req.isAuthenticated() && req.user['isAdmin'] == true) {
         return next();
     } else {
         if (req.header('Content-Type') == 'application/json') {
