@@ -191,6 +191,8 @@
         }
 
         function editSpot(spotId) {
+            console.log('HELLO!');            
+            console.log(spotsCache);            
             for (i in spotsCache) {
                 console.log(spotsCache[i]);
                 if (spotsCache[i]._id == spotId) {
