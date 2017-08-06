@@ -169,7 +169,7 @@
                         <td><img id="`+ spots[i]._id +`" src="uploads/`+ spots[i].photo +`"></td>
                         <td>
                             <button onclick='editSpot("`+ spots[i]._id +`")' class="btn btn-default leftBtn">Edit</button>
-                            <button onclick='deleteSpot("`+ spots[i]._id +`")' class="btn btn-danger">Delete</button>
+                            <button onclick='deleteSpot("`+ spots[i]._id +`")' class="btn btn-danger" confirm="are you sure?">Delete</button>
                         </td>
                     </tr>
                 `;
@@ -260,7 +260,7 @@
                         <td>`+ users[i].joinDate.split('T')[0] +`</td>
                         <td>
                             <button onclick='editUser("`+ users[i]._id +`")' class="btn btn-default leftBtn">Edit</button>
-                            <button onclick='deleteUser("`+ users[i]._id +`")' class="btn btn-danger">Delete</button>
+                            <button onclick='deleteUser("`+ users[i]._id +`")' class="btn btn-danger" confirm="are you sure?">Delete</button>
                         </td>
                     </tr>
                 `;
