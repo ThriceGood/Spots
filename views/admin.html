@@ -192,12 +192,8 @@
         }
 
         function editSpot(spotId) {
-            console.log('HELLO!');            
-            console.log(spotsCache);            
             for (i in spotsCache) {
-                console.log(spotsCache[i]);
                 if (spotsCache[i]._id == spotId) {
-                    console.log(spotsCache[i]);
                     $('#spotId').val(spotId)
                     $('#name').val(spotsCache[i].name);
                     $('#address').val(spotsCache[i].address);
@@ -220,7 +216,6 @@
                 type: 'PUT',
                 data: data,
                 success: function(data) {
-                    console.log(data);
                     $('#spotModal').modal('toggle');      
                     spotsCache = [];                                   
                     showSpotTable(); 
@@ -311,7 +306,6 @@
                 type: 'PUT',
                 data: data,
                 success: function(data) {
-                    console.log(data);
                     $('#userModal').modal('toggle');
                     usersCache = [];        
                     showUserTable(); 
