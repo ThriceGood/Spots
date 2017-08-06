@@ -169,7 +169,7 @@
                         <td><img id="`+ spots[i]._id +`" src="uploads/`+ spots[i].photo +`"></td>
                         <td>
                             <button onclick='editSpot("`+ spots[i]._id +`")' class="btn btn-default leftBtn">Edit</button>
-                            <button onclick='deleteSpot("`+ spots[i]._id +`")' class="btn btn-danger" confirm="are you sure?">Delete</button>
+                            <button onclick='deleteSpot("`+ spots[i]._id +`")' class="btn btn-danger">Delete</button>
                         </td>
                     </tr>
                 `;
@@ -179,16 +179,18 @@
         }
 
         function deleteSpot(spotId) {
-            // use to delete image from file system
-            var imageName = $('#'+ spotId).prop('src').split('/')[4]
-            $.ajax({
-                url: "/admin/spot/" + spotId,
-                type: 'DELETE',
-                success: function() {
-                    spotsCache = []; 
-                    showSpotTable(); 
-                },
-            });
+            if (confirm('are you sure?')) {
+                // use to delete image from file system
+                var imageName = $('#'+ spotId).prop('src').split('/')[4]
+                $.ajax({
+                    url: "/admin/spot/" + spotId,
+                    type: 'DELETE',
+                    success: function() {
+                        spotsCache = []; 
+                        showSpotTable(); 
+                    },
+                });
+            }            
         }
 
         function editSpot(spotId) {
@@ -260,7 +262,7 @@
                         <td>`+ users[i].joinDate.split('T')[0] +`</td>
                         <td>
                             <button onclick='editUser("`+ users[i]._id +`")' class="btn btn-default leftBtn">Edit</button>
-                            <button onclick='deleteUser("`+ users[i]._id +`")' class="btn btn-danger" confirm="are you sure?">Delete</button>
+                            <button onclick='deleteUser("`+ users[i]._id +`")' class="btn btn-danger">Delete</button>
                         </td>
                     </tr>
                 `;
@@ -270,14 +272,16 @@
         }
 
         function deleteUser(userId) {
-            $.ajax({
-                url: "/admin/user/" + userId,
-                type: 'DELETE',
-                success: function() {
-                    usersCache = []; 
-                    showUserTable(); 
-                },
-            });
+            if (confirm('are you sure?')) {
+                $.ajax({
+                    url: "/admin/user/" + userId,
+                    type: 'DELETE',
+                    success: function() {
+                        usersCache = []; 
+                        showUserTable(); 
+                    },
+                });
+            }
         }
 
         function editUser(userId) {
