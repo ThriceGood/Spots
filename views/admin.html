@@ -137,11 +137,12 @@
 
         function showSpotTable() {
             if (spotsCache.lenth == 0) {
-                buildSpotTable(spotsCache)
-            } else {
                 $.get( "/getSpots", function(data) {
+                    spotsCache = data;
                     buildSpotTable(data);
                 });
+            } else {
+                buildSpotTable(spotsCache)
             }
         }
 
