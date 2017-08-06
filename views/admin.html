@@ -62,71 +62,87 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">Add Spot</h4>
+                    <h4 class="modal-title" id="myModalLabel">Edit Spot</h4>
                 </div>
-                <form action="/" method="POST" encType="multipart/form-data">
-                    <!--modal content-->
-                    <div class="modal-body">
-                        <input type="hidden" id="coords" name="coords">
-                        <div class="form-group">
-                            <label for="title">Name</label>
-                            <input required type="text" class="form-control" id="name" name="name" placeholder="name the spot...">
-                        </div>
-                        <div class="form-group">
-                            <label for="address">Address</label>
-                            <input required type="text" class="form-control" id="address" name="address" placeholder="enter the address">
-                        </div>
-                        <div class="form-group">
-                            <label for="description">Description</label>
-                            <textarea required maxlength="150" class="form-control" rows="5" id="description" name="description" placeholder="describe the spot..."></textarea>
-                        </div>
-                        <div class="form-group" id="photoGroup">
-                            <label for="photo" class="btn btn-default">
-                                Add Photo <input required type="file" id="photo" name="photo" hidden>
-                            </label>
-                            <span id="noPhotoError" class="help-block">a photo is required</span>
-                        </div>
+                <!--modal content-->
+                <div class="modal-body">
+                    <!--<input type="hidden" id="coords" name="coords">-->
+                    <input type="hidden" id="spotId" name="spotId">
+                    <div class="form-group">
+                        <label for="title">Name</label>
+                        <input required type="text" class="form-control" id="name" name="name" placeholder="name the spot...">
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-default" onclick="checkPhoto()">Save</button>
+                    <div class="form-group">
+                        <label for="address">Address</label>
+                        <input required type="text" class="form-control" id="address" name="address" placeholder="enter the address">
                     </div>
-                </form>
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea required maxlength="150" class="form-control" rows="5" id="description" name="description" placeholder="describe the spot..."></textarea>
+                    </div>
+                    <!--<div class="form-group" id="photoGroup">
+                        <label for="photo" class="btn btn-default">
+                            Add Photo <input required type="file" id="photo" name="photo" hidden>
+                        </label>
+                        <span id="noPhotoError" class="help-block">a photo is required</span>
+                    </div>-->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-default" onclick="saveSpotUpdates()">Save</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!--spot info modal-->
-    <div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <!-- registration form modal -->
+    <div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">Spot Info</h4>
+                    <h4 class="modal-title" id="myModalLabel">Edit User</h4>
                 </div>
+                <!--modal content-->
                 <div class="modal-body">
-                    <div class="well">
-                        <p id="infoName"></p>
-                        <p id="infoAddress"></p>
-                        <!--<br>-->
-                        <p id="infoDescription"></p>
+                    <input type="hidden" id="userId" name="userId">                    
+                    <div class="form-group" id="userNameGroup">
+                        <label for="userName">Username</label>
+                        <input required minlength="3" maxlength="30" type="text" class="form-control" id="userName" name="username" placeholder="enter username">
                     </div>
-                    <div id="infoPhoto">
-                        <img src=""></img>
+                    <div class="form-group">
+                        <label for="userEmail">Email</label>
+                        <input required type="email" class="form-control" id="userEmail" name="email" placeholder="enter email">
                     </div>
-                    <hr>
-                    <p style="font-size:11;"><i id="infoUploadBy"></i></p>
+                    <div class="form-group">
+                        <label for="userLocation">Location</label>
+                        <select class="form-control" name="location">
+                            <option>Vienna</option>
+                            <option>Dublin</option>
+                            <option>New York</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button onclick="saveUserUpdates()" type="button" id="regSubmit" class="btn btn-default">Save</button>
                 </div>
             </div>
-        </div>spots
+        </div>
     </div>
 
     <script type="text/javascript">
 
+        spotsCache = [];
+
         function showSpotTable() {
-            $.get( "/getSpots", function(data) {
-                buildSpotTable(data);
-            });
+            if (spotsCache.lenth == 0) {
+                buildSpotTable(spotsCache)
+            } else {
+                $.get( "/getSpots", function(data) {
+                    buildSpotTable(data);
+                });
+            }
         }
 
         function buildSpotTable(spots) {
@@ -149,8 +165,11 @@
                         <td>`+ spots[i].name +`</td>
                         <td>`+ spots[i].uploadBy +`</td>
                         <td>`+ spots[i].uploadDate.split('T')[0] +`</td>
-                        <td><img id="`+ spots[i].name.replace(/ /g, '_') +`" src="uploads/`+ spots[i].photo +`"></td>
-                        <td><button class="btn btn-default leftBtn">Edit</button><button onclick='deleteSpot("`+ spots[i].name +`")' class="btn btn-danger">Delete</button></td>
+                        <td><img id="`+ spots[i]._id +`" src="uploads/`+ spots[i].photo +`"></td>
+                        <td>
+                            <button onclick='editSpot("`+ spots[i]._id +`")' class="btn btn-default leftBtn">Edit</button>
+                            <button onclick='deleteSpot("`+ spots[i]._id +`")' class="btn btn-danger">Delete</button>
+                        </td>
                     </tr>
                 `;
             }
@@ -158,21 +177,63 @@
             table.html(html);
         }
 
-        function deleteSpot(spotname) {
-            var image = $('#'+ spotname.replace(/ /g, '_'));
+        function deleteSpot(spotId) {
             // use to delete image from file system
-            var imageName = image.prop('src').split('/')[4]
+            var imageName = $('#'+ spotId).prop('src').split('/')[4]
             $.ajax({
-                url: "/admin/deleteSpot/" + spotname,
+                url: "/admin/spot/" + spotId,
                 type: 'DELETE',
-                success: function() { showSpotTable(); },
+                success: function() {
+                    spotsCache = []; 
+                    showSpotTable(); 
+                },
             });
         }
 
-        function showUserTable() {
-            $.get( "/admin/getUsers", function(data) {
-                buildUserTable(data);
+        function editSpot(spotId) {
+            for (i in spotsCache) {
+                if (spotsCache[i]._id == spotId) {
+                    $('#spotId').val(spotId)
+                    $('#name').val(spotsCache[i].name);
+                    $('#address').val(spotsCache[i].address);
+                    $('#description').val(spotsCache[i].description);
+                    break;
+                }
+            }
+            $('#spotModal').modal('toggle');
+        }
+
+        function saveSpotUpdates() {
+            var data = {
+                spotId: $('#spotId').val(), 
+                name: $('#name').val(),
+                address: $('#address').val(),
+                description: $('#description').val()
+            }
+            $.ajax({
+                url: "/admin/spot",
+                type: 'PUT',
+                data: data,
+                success: function(data) {
+                    console.log(data);
+                    $('#spotModal').modal('toggle');      
+                    spotsCache = [];                                   
+                    showSpotTable(); 
+                },
             });
+        }
+
+        usersCache = [];
+
+        function showUserTable() {
+            if (usersCache.length == 0) {
+                $.get( "/admin/getUsers", function(data) {
+                    usersCache = data;
+                    buildUserTable(data);
+                });
+            } else {
+                buildUserTable(usersCache);
+            }
         }
 
         function buildUserTable(users) {
@@ -197,7 +258,10 @@
                         <td>`+ users[i].email +`</td>
                         <td>`+ users[i].location +`</td>
                         <td>`+ users[i].joinDate.split('T')[0] +`</td>
-                        <td><button class="btn btn-default leftBtn">Edit</button><button onclick='deleteUser("`+ users[i].username +`")' class="btn btn-danger">Delete</button></td>
+                        <td>
+                            <button onclick='editUser("`+ users[i]._id +`")' class="btn btn-default leftBtn">Edit</button>
+                            <button onclick='deleteUser("`+ users[i]._id +`")' class="btn btn-danger">Delete</button>
+                        </td>
                     </tr>
                 `;
             }
@@ -205,11 +269,48 @@
             table.html(html);
         }
 
-        function deleteUser(username) {
+        function deleteUser(userId) {
             $.ajax({
-                url: "/admin/deleteUser/" + username,
+                url: "/admin/user/" + userId,
                 type: 'DELETE',
-                success: function() { showUserTable(); },
+                success: function() {
+                    usersCache = []; 
+                    showUserTable(); 
+                },
+            });
+        }
+
+        function editUser(userId) {
+            for (i in usersCache) {
+                if (usersCache[i]._id == userId) {
+                    $('#userId').val(userId)
+                    $('#userName').val(usersCache[i].username);
+                    $('#userEmail').val(usersCache[i].email);
+                    // location
+                    //$('#description').val(spotsCache[i].description);
+                    break;
+                }
+            }
+            $('#userModal').modal('toggle');
+        }
+
+        function saveUserUpdates() {
+            var data = {
+                userId: $('#userId').val(), 
+                username: $('#userName').val(),
+                email: $('#userEmail').val(),
+                //description: $('#description').val()
+            }
+            $.ajax({
+                url: "/admin/user",
+                type: 'PUT',
+                data: data,
+                success: function(data) {
+                    console.log(data);
+                    $('#userModal').modal('toggle');
+                    usersCache = [];        
+                    showUserTable(); 
+                },
             });
         }
 

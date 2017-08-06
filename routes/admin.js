@@ -21,8 +21,25 @@ router.get('/getUsers', authenticate, function(req, res, next){
     });
 });
 
-router.delete('/deleteUser/:username', authenticate, function(req, res, next) {
-    User.remove({username: req.params.username}, function(err) {
+// update user
+router.put('/user', authenticate, function(req, res, next){
+    var updateParams = {
+        username: req.body.username,
+        email: req.body.email,
+        location: req.body.location,
+    }
+    User.findOneAndUpdate({_id: req.body.userId}, {$set: updateParams}, function(err, user){
+        if (err) {
+            res.json({message: err});            
+        } else {
+            res.json({message: 'user updated'});
+        }
+    });
+});
+
+// delete user
+router.delete('/user/:id', authenticate, function(req, res, next) {
+    User.remove({_id: req.params.id}, function(err) {
         if (err) {
             res.json({message: err});
         } else {
@@ -31,60 +48,25 @@ router.delete('/deleteUser/:username', authenticate, function(req, res, next) {
     });
 });
 
-// TODO: still to implement updates
-// update spots
-router.post('/', authenticate, function(req, res, next){
-    var error_message = validateSpotInput(req);
-    if (error_message) {
-        req.flash('error', error_message.join(', '));
-        res.redirect('/');
-    } else {
-        User.findById(req.user._id, function(err, user){
-            if (err) throw err;
-            // save photo
-            var photo = req.files.photo;
-            var photoname = '';
-            if (photo) {
-                photoname = resizeAndSavePhoto(photo, req.user._id);                
-            }
-            // save spot
-            var spot = new Spot({
-                coords: req.body.coords,
-                name: req.body.name,
-                address: req.body.address,
-                description: req.body.description,
-                photo: photoname,
-                uploadBy: user.username,
-                uploadDate: new Date()
-            });
-            spot.save(function(err, upload) {
-                if (err) return console.error(err);
-                console.log('spot successfully saved');
-            })
-            res.redirect('/');
-        });
+// update spot
+router.put('/spot', authenticate, function(req, res, next){
+    var updateParams = {
+        name: req.body.name,
+        address: req.body.address,
+        description: req.body.description,
     }
+    Spot.findOneAndUpdate({_id: req.body.spotId}, {$set: updateParams}, function(err, spot){
+        if (err) {
+            res.json({message: err});            
+        } else {
+            res.json({message: 'spot updated'});
+        }
+    });
 });
 
-function validateSpotInput(req) {
-    req.checkBody('coords', 'coords was not populated').notEmpty();
-    req.checkBody('name', 'name is required field').notEmpty();
-    req.checkBody('address', 'address is required field').notEmpty();
-    req.checkBody('description', 'description is required field').notEmpty();
-    var errors = req.validationErrors();
-    var error_message = [];
-    if (errors) {
-        for (i in errors) {
-            error_message.push(errors[i].msg);
-        }
-        return error_message;
-    } else {
-        return false;
-    }
-}
-
-router.delete('/deleteSpot/:name', authenticate, function(req, res, next) {
-    Spot.remove({name: req.params.name}, function(err) {
+// delete spot
+router.delete('/spot/:id', authenticate, function(req, res, next) {
+    Spot.remove({_id: req.params.id}, function(err) {
         if (err) {
             res.json({message: err});
         } else {
