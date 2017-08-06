@@ -136,12 +136,16 @@
         spotsCache = [];
 
         function showSpotTable() {
+            console.log(spotsCache);
+            console.log(spotsCache.lenth);
             if (spotsCache.lenth == 0) {
+                console.log(1);
                 $.get( "/getSpots", function(data) {
                     spotsCache = data;
                     buildSpotTable(data);
                 });
             } else {
+                console.log(1);
                 buildSpotTable(spotsCache)
             }
         }
