@@ -16,7 +16,7 @@ router.get('/', function(req, res, next){
 // get all spots route
 router.get('/getSpots', function(req, res, next){
     Spot.find({}, function (err, spots) {
-        if (err) return handleError(err);
+        if (err) return err;
         res.json(spots);
     });
 });
@@ -47,7 +47,7 @@ router.post('/', authenticate, function(req, res, next){
                 uploadDate: new Date()
             });
             spot.save(function(err, upload) {
-                if (err) return console.error(err);
+                if (err) throw err;
                 console.log('spot successfully saved');
             })
             res.redirect('/');

@@ -33,8 +33,9 @@
         </div>
          <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="#" onclick="showSpotTable()" class="closeMe" data-toggle="modal" data-target="#aboutModal">spots</a></li>
-            <li><a href="#" onclick="showUserTable()" class="closeMe" data-toggle="modal" data-target="#aboutModal">users</a></li>
+            <li><a href="#" onclick="showSpotTable()" class="closeMe" data-toggle="modal">spots</a></li>
+            <li><a href="#" onclick="showUserTable()" class="closeMe" data-toggle="modal">users</a></li>
+            <li><a href="#" onclick="showContactsTable()" class="closeMe" data-toggle="modal">Messages</a></li>
         </div>
       </div>
     </nav>
@@ -126,6 +127,25 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     <button onclick="saveUserUpdates()" type="button" id="regSubmit" class="btn btn-default">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- contact modal -->
+    <div class="modal fade" id="contactModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Message</h4>
+                </div>
+                <!--modal content-->
+                <div class="modal-body">
+                    <p id="contactMessage"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -317,6 +337,82 @@
             });
         }
 
+        contactsCache = [];
+
+        function showContactsTable() {
+            if (contactsCache.length == 0) {
+                $.get( "/admin/getContacts", function(data) {
+                    contactsCache = data;
+                    buildContactsTable(data);
+                });
+            } else {
+                buildContactsTable(contactsCache)
+            }
+        }
+
+        function buildContactsTable(contacts) {
+            var table = $('#adminTable');
+            var html = `
+                <thead>
+                    <tr>
+                        <th class="text-center">Subject</th>
+                        <th class="text-center">Name</th>
+                        <th class="text-center">Email</th>
+                        <th class="text-center">Date</th>
+                        <th class="text-center"></th>
+                    </tr>
+                </thead>
+                <tbody>
+            `;
+            for (i in contacts) {
+                html += `
+                    <tr>
+                        <td>`+ contacts[i].subject +`</td>
+                        <td>`+ contacts[i].name +`</td>
+                        <td>`+ contacts[i].email +`</td>
+                        <!--<td>`+ contacts[i].date.split('T')[0] +`</td>-->
+                        <td>`+ formatDate(contacts[i].date) +`</td>
+                        <td>
+                            <button onclick='showContact("`+ contacts[i]._id +`")' class="btn btn-default leftBtn">Show</button>
+                            <button onclick='deleteContact("`+ contacts[i]._id +`")' class="btn btn-danger">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            }
+            html += '<tbody>';
+            table.html(html);
+        }
+
+        function formatDate(contactDate) {
+            var date = contactDate.split('T')[0];
+            var time = contactDate.split('T')[1].split('.')[0];
+            var dateTime = date + ' ' + time;
+            return dateTime;
+        }
+
+        function deleteContact(contactId) {
+            if (confirm('are you sure?')) {
+                $.ajax({
+                    url: "/admin/contact/" + contactId,
+                    type: 'DELETE',
+                    success: function() {
+                        contactsCache = []; 
+                        showContactsTable(); 
+                    },
+                });
+            }
+        }
+
+        function showContact(contactId) {
+            for (i in contactsCache) {
+                if (contactsCache[i]._id == contactId) {
+                    $('#contactMessage').html(contactsCache[i].message);
+                    break;
+                }
+            }
+            $('#contactModal').modal('toggle');
+        }
+
         $(function() {
             showSpotTable();
         });
@@ -329,18 +425,10 @@
         });
 
         // slide up flash messages after 5 seconds
-        function hideMessages() {
-            $('#messages').slideUp();
-        }
-        setTimeout(hideMessages, 5000);
-        
-        // check photo
-        function checkPhoto() {
-            var photoVal = $('#photo').val();
-            if (!photoVal) {
-                $('#photoGroup').addClass('has-error');
-            }
-        }
+        //function hideMessages() {
+        //    $('#messages').slideUp();
+        //}
+        //setTimeout(hideMessages, 5000);
 
     </script>
 

@@ -137,6 +137,11 @@
      vertical-align: middle;
 }
 
+#contactModal p {
+    text-align: justify;
+    padding: 0px 20px;
+}
+
 /*media query*/
 @media(max-width: 768px) {
     .divider {

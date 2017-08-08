@@ -6,6 +6,7 @@ const sharp = require('sharp');
 // import models
 const Spot = require('../models/spot.model')
 const User = require('../models/user.model')
+const Contact = require('../models/contact.model')
 
 
 // admin route
@@ -16,7 +17,7 @@ router.get('/', authenticate, function(req, res, next){
 // get all users route
 router.get('/getUsers', authenticate, function(req, res, next){
     User.find({}, function (err, users) {
-        if (err) return handleError(err);
+        if (err) return err;
         res.json(users);
     });
 });
@@ -74,6 +75,43 @@ router.delete('/spot/:id', authenticate, function(req, res, next) {
         }
     });
 });
+
+// get all contacts route
+router.get('/getContacts', authenticate, function(req, res, next){
+    Contact.find({}, function (err, contacts) {
+        if (err) return err;
+        res.json(contacts);
+    });
+});
+
+// receive contact
+router.post('/contact', function(req, res, next) {
+    var contact = new Contact({
+        name: req.body.name,
+        email: req.body.email,
+        subject: req.body.subject,
+        message: req.body.message,
+        date: new Date()
+    });
+    contact.save(function(err, contact) {
+        if (err) throw err;
+        console.log('Contact successfully saved');
+        req.flash('success', 'your message has been sent');
+    })
+    res.redirect('/');        
+});
+
+// delete spot
+router.delete('/contact/:id', authenticate, function(req, res, next) {
+    Contact.remove({_id: req.params.id}, function(err) {
+        if (err) {
+            res.json({message: err});
+        } else {
+            res.json({message: 'contact deleted'});
+        }
+    });
+});
+
 
 function authenticate(req, res, next) {
     if (req.isAuthenticated() && req.user['isAdmin'] == true) {

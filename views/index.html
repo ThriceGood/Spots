@@ -40,6 +40,7 @@
                     <li><a href="#" data-toggle="modal" data-target="#loginModal">login</a></li>
                     <li><a href="#" data-toggle="modal" data-target="#registrationModal">register</a></li>
                 <% } %>       
+                <li><a href="#" data-toggle="modal" data-target="#contactModal">contact</a></li>
                 <li><a href="#" data-toggle="modal" data-target="#aboutModal">about</a></li>
                 <li role="separator" class="divider"></li>
               </ul>
@@ -256,6 +257,43 @@
                     </p>
                     <p>Enjoy, shred and please contribute!</p>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- contact modal -->
+    <div class="modal fade" id="contactModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Contact</h4>
+                </div>
+                <form action="/admin/contact" method="POST" encType="multipart/form-data">
+                    <!--modal content-->
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="contactName">Name</label>
+                            <input required type="text" class="form-control" id="contactName" name="name">
+                        </div>
+                        <div class="form-group">
+                            <label for="contactEmail">Email</label>
+                            <input required type="email" class="form-control" id="contactEmail" name="email">
+                        </div>
+                        <div class="form-group">
+                            <label for="contactSubject">Subject</label>
+                            <input required type="text" class="form-control" id="contactSubject" name="subject">
+                        </div>
+                        <div class="form-group">
+                            <label for="contactMessage">Message</label>
+                            <textarea required maxlength="650" class="form-control" rows="5" id="contactMessage" name="message"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-default">Send</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

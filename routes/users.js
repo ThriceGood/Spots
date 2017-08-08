@@ -75,7 +75,7 @@ router.post('/login', function(req, res, next){
     req.checkBody('username', 'username is required field').notEmpty();
     req.checkBody('password', 'password is required field').notEmpty();
     var errors = req.validationErrors();
-    var error_message = validateRegistrationInput(errors);
+    var error_message = validateRegistrationInput(errors);req
     if (error_message) {
         req.flash('error', error_message.join(', '));
         res.redirect('/');
